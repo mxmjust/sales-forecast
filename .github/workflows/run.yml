@@ -1,7 +1,7 @@
 name: Run Sales Forecast
 
 on:
-  workflow_dispatch:  # Ручной запуск через интерфейс GitHub
+  workflow_dispatch:
 
 jobs:
   run_forecast:
@@ -18,14 +18,18 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install openpyxl numpy pandas pmdarima scipy
+        pip install openpyxl==3.1.2 numpy==1.24.3 pandas==2.0.3 pmdarima==2.0.4 scipy==1.10.1
+
+    - name: List files
+      run: ls -la  # Для отладки
 
     - name: Run script
-      run: python sales_forecast.py
+      run: python -W ignore sales_forecast.py  # Игнорируем предупреждения
 
     - name: Upload result
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: sales-result
         path: sales.xlsx
-        retention-days: 7  # Хранение файла 7 дней
+        retention-days: 7
